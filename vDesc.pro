@@ -12,9 +12,9 @@ TARGET = vDesc
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        vdesc.cpp
+SOURCES += src\main.cpp\
+        src\vdesc.cpp
 
-HEADERS  += vdesc.h
+HEADERS  += src\vdesc.h
 
-FORMS    += vdesc.ui
+FORMS    += ui\vdesc.ui
