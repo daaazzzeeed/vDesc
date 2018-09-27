@@ -12,6 +12,8 @@ vDesc::vDesc(QWidget *parent) :
     ui->setupUi(this);
     manager = new QNetworkAccessManager(this);
     manager2 = new QNetworkAccessManager(this);
+    manager3 = new QNetworkAccessManager(this);
+    manager4 = new QNetworkAccessManager(this);
     connect(ui->tokenEdit,&QLineEdit::returnPressed,this,&vDesc::onReturnPressed);
     connect(ui->changeTokenPb,&QPushButton::clicked,this,&vDesc::onChangeTokenClicked);
     connect(ui->getFriendsPb,&QPushButton::clicked,this,&vDesc::onGetFriendsClicked);
@@ -19,7 +21,9 @@ vDesc::vDesc(QWidget *parent) :
     connect(ui->friendsOnline, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(chooseIdOnline()));
     connect(ui->allFriends, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(chooseId()));
     connect(ui->sendMessagePb,&QPushButton::clicked,this,&vDesc::sendMessage);
-
+    connect(ui->getMessagesPb,&QPushButton::clicked,this,&vDesc::onGetMessagesClicked);
+    connect(manager3, SIGNAL(finished(QNetworkReply*)),this, SLOT(onReplyForMessagesFinished(QNetworkReply*)));
+    connect(manager4, SIGNAL(finished(QNetworkReply*)),this, SLOT(onReplyForSenderNameFinished(QNetworkReply*)));
 }
 
 vDesc::~vDesc()
@@ -152,3 +156,47 @@ void vDesc::sendMessage(){
     manager->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.send?user_id=" + currentId + "&message="+ message +"&access_token="+token+"&v=5.85")));
     ui->history->append("[" + QTime::currentTime().toString() + "] Сообщение: " + message +" отправлено: " + name );
 }
+
+void vDesc::onGetMessagesClicked(){
+    ui->messages->clear();
+    manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=1&access_token="+token+"&v=5.85")));
+}
+
+void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
+    QString strReply = (QString)reply->readAll();
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+    jsonObject = jsonObject["response"].toObject();
+    QJsonArray jsonArray = jsonObject["items"].toArray();
+    QString id;
+    int from_id;
+    foreach (const QJsonValue & value, jsonArray) {
+        QJsonObject obj = value.toObject();
+        QJsonObject obj2 = value.toObject();
+        obj = obj["conversation"].toObject();
+        obj = obj["peer"].toObject();
+        id = QString::number(obj["id"].toInt());
+        obj2 = obj2["last_message"].toObject();
+        from_id = obj2["from_id"].toInt();
+        text = obj2["text"].toString();
+        qDebug() << text;
+        qDebug() << from_id;
+    }
+    manager4->get(QNetworkRequest(QUrl("https://api.vk.com/method/users.get?user_ids=" + id +","+ QString::number(from_id) + "&access_token="+token+"&v=5.85")));
+}
+
+void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
+    QString strReply = (QString)reply->readAll();
+    qDebug() << strReply;
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+    QJsonArray jsonArray = jsonObject["response"].toArray();
+    foreach (const QJsonValue & value, jsonArray) {
+        QJsonObject obj = value.toObject();
+        sender_first_name.append(obj["first_name"].toString());
+        sender_last_name.append(obj["last_name"].toString());
+    }
+
+    ui->messages->addItem("[" + sender_first_name.at(0)+" "+sender_last_name.at(0)  + "]" + " от " + sender_first_name.at(1)+" "+sender_last_name.at(1)+ " : " + text);
+}
+

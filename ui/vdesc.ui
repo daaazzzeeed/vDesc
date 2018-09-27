@@ -59,7 +59,7 @@
       <item>
        <widget class="QTabWidget" name="messagestabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
@@ -126,7 +126,7 @@
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QTextEdit" name="messages"/>
+           <widget class="QListWidget" name="messages"/>
           </item>
          </layout>
         </widget>
