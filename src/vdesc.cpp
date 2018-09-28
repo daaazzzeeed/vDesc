@@ -85,6 +85,7 @@ void vDesc::onReturnPressed(){
     token = ui->tokenEdit->text();
     ui->tokenEdit->setText("************");
     manager2->get(QNetworkRequest(QUrl("https://api.vk.com/method/account.getProfileInfo?access_token="+token+"&v=5.85")));
+  //  manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=10&access_token="+token+"&v=5.85"))); //в конструктор
 }
 
 void vDesc::onChangeTokenClicked(){
@@ -159,30 +160,31 @@ void vDesc::sendMessage(){
 
 void vDesc::onGetMessagesClicked(){
     ui->messages->clear();
-    manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=1&access_token="+token+"&v=5.85")));
+    int count = ui->spinBox->value();
+    manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=" + QString::number(count) + "&access_token="+token+"&v=5.85"))); //в конструктор
 }
 
 void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
     QString strReply = (QString)reply->readAll();
+  //  qDebug() << strReply;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
     jsonObject = jsonObject["response"].toObject();
     QJsonArray jsonArray = jsonObject["items"].toArray();
-    QString id;
-    int from_id;
+    QStringList id;
     foreach (const QJsonValue & value, jsonArray) {
         QJsonObject obj = value.toObject();
         QJsonObject obj2 = value.toObject();
         obj = obj["conversation"].toObject();
         obj = obj["peer"].toObject();
-        id = QString::number(obj["id"].toInt());
+        id.append(QString::number(obj["id"].toInt()));
         obj2 = obj2["last_message"].toObject();
-        from_id = obj2["from_id"].toInt();
-        text = obj2["text"].toString();
-        qDebug() << text;
-        qDebug() << from_id;
+        from_id.append(QString::number(obj2["from_id"].toInt()));
+        text.append(obj2["text"].toString());
     }
-    manager4->get(QNetworkRequest(QUrl("https://api.vk.com/method/users.get?user_ids=" + id +","+ QString::number(from_id) + "&access_token="+token+"&v=5.85")));
+    qDebug() << from_id.length();
+    QString url = "https://api.vk.com/method/users.get?user_ids="+ id.join(",") + "&access_token="+token+"&v=5.85";
+    manager4->get(QNetworkRequest(QUrl(url))); //пизда потому что есть повторяющиеся id ( нужно делать два запроса???? )
 }
 
 void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
@@ -195,8 +197,19 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
         QJsonObject obj = value.toObject();
         sender_first_name.append(obj["first_name"].toString());
         sender_last_name.append(obj["last_name"].toString());
+        for(int i =0; i<from_id.length(); i++){
+            if(from_id.at(i) == QString::number(obj["id"].toInt())){
+                from_id.replace(i,QString(obj["first_name"].toString() + " " +obj["last_name"].toString() ));
+            }
+        }
     }
+    qDebug() << sender_first_name.length();
+    qDebug() << sender_last_name.length();
+    qDebug() << from_id.length();
 
-    ui->messages->addItem("[" + sender_first_name.at(0)+" "+sender_last_name.at(0)  + "]" + " от " + sender_first_name.at(1)+" "+sender_last_name.at(1)+ " : " + text);
+   for(int i = 0; i<sender_first_name.length(); i++){
+      ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
+    }
 }
+
 

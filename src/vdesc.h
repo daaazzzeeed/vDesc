@@ -36,8 +36,9 @@ public:
     QStringList val ;
     QString currentId;
     QString name;
-    QString text;
+    QStringList text;
     QStringList sender_first_name, sender_last_name;
+    QStringList from_id;
 
 private:
     Ui::vDesc *ui;
