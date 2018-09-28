@@ -160,13 +160,17 @@ void vDesc::sendMessage(){
 
 void vDesc::onGetMessagesClicked(){
     ui->messages->clear();
+    text.clear();
+    sender_first_name.clear();
+    sender_last_name.clear();
+    from_id.clear();
+
     int count = ui->spinBox->value();
-    manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=" + QString::number(count) + "&access_token="+token+"&v=5.85"))); //в конструктор
+    manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=" + QString::number(count) + "&access_token="+token+"&v=5.85")));
 }
 
 void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
     QString strReply = (QString)reply->readAll();
-  //  qDebug() << strReply;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
     jsonObject = jsonObject["response"].toObject();
@@ -182,14 +186,21 @@ void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
         from_id.append(QString::number(obj2["from_id"].toInt()));
         text.append(obj2["text"].toString());
     }
-    qDebug() << from_id.length();
+    int i = 0;
+    foreach (const QString &str, id) {
+            if(str.startsWith("-")){                //фикс бага с отрицательными id
+               id.removeOne(str);
+               text.removeAt(i);
+            }
+            i++;
+        }
+
     QString url = "https://api.vk.com/method/users.get?user_ids="+ id.join(",") + "&access_token="+token+"&v=5.85";
     manager4->get(QNetworkRequest(QUrl(url))); //пизда потому что есть повторяющиеся id ( нужно делать два запроса???? )
 }
 
 void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
     QString strReply = (QString)reply->readAll();
-    qDebug() << strReply;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
     QJsonArray jsonArray = jsonObject["response"].toArray();
@@ -203,11 +214,11 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
             }
         }
     }
-    qDebug() << sender_first_name.length();
-    qDebug() << sender_last_name.length();
-    qDebug() << from_id.length();
+    qDebug() << "text :" << text.length();
+    qDebug() << "f_n :" << sender_first_name.length();
+    qDebug() << "l_n :" << sender_last_name.length();
 
-   for(int i = 0; i<sender_first_name.length(); i++){
+   for(int i = 0; i<text.length(); i++){
       ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
     }
 }
