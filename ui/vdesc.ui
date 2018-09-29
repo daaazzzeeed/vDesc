@@ -26,20 +26,6 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QLineEdit" name="nameEdit">
-          <property name="placeholderText">
-           <string>Здесь будет ваше имя</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="changeTokenPb">
-          <property name="text">
-           <string>Сменить токен</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
@@ -53,70 +39,56 @@
           </property>
          </spacer>
         </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="changeTokenPb">
+          <property name="text">
+           <string>Change Token</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QLineEdit" name="nameEdit">
+          <property name="placeholderText">
+           <string>Здесь будет ваше имя</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
        <widget class="QTabWidget" name="messagestabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Друзья</string>
+          <string>Friends</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="5" column="0">
-               <widget class="QPushButton" name="sendMessagePb">
-                <property name="text">
-                 <string>Отправить сообщение -&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="2">
-               <widget class="QLineEdit" name="messageInput">
-                <property name="placeholderText">
-                 <string>Введите текст сообщения</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="3" column="0" colspan="2">
-               <widget class="QTextEdit" name="history">
-                <property name="placeholderText">
-                 <string>Здесь будет отображаться история</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <layout class="QGridLayout" name="gridLayout_2"/>
             </item>
            </layout>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_4">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="getFriendsPb">
+              <property name="text">
+               <string>Friends List</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QTabWidget" name="friendsTabWidget">
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="tab_7">
                <attribute name="title">
-                <string>Онлайн</string>
+                <string>Online</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_4">
                 <item>
@@ -126,7 +98,7 @@
               </widget>
               <widget class="QWidget" name="tab_8">
                <attribute name="title">
-                <string>Все</string>
+                <string>All</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item>
@@ -136,40 +108,31 @@
               </widget>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QPushButton" name="getFriendsPb">
-              <property name="text">
-               <string>Список друзей</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
-         <zorder>history</zorder>
-         <zorder>sendMessagePb</zorder>
-         <zorder>sendMessagePb</zorder>
-         <zorder>messageInput</zorder>
-         <zorder>getFriendsPb</zorder>
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Сообщения</string>
+          <string>Dialogs</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="2" column="2">
-             <widget class="QPushButton" name="getMessagesPb">
-              <property name="text">
-               <string>Получить сообщения</string>
-              </property>
-             </widget>
+            <item row="0" column="0" colspan="3">
+             <widget class="QListWidget" name="messages"/>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Загружать диалогов:</string>
+               <string>Items to load:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QPushButton" name="getMessagesPb">
+              <property name="text">
+               <string>Get messages</string>
               </property>
              </widget>
             </item>
@@ -180,8 +143,19 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="3">
-             <widget class="QListWidget" name="messages"/>
+            <item row="3" column="2">
+             <widget class="QPushButton" name="sendMessagePb">
+              <property name="text">
+               <string>Send Message --&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLineEdit" name="messageInput">
+              <property name="placeholderText">
+               <string>Enter text:</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

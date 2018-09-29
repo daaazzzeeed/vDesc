@@ -25,6 +25,7 @@ public:
     QNetworkAccessManager *manager2;
     QNetworkAccessManager *manager3;
     QNetworkAccessManager *manager4;
+    QNetworkAccessManager *manager5;
     void getMyName();
     void getInfoByUserId(QStringList str);
     void getInfoByUserId2(QStringList str);
@@ -39,6 +40,10 @@ public:
     QStringList text;
     QStringList sender_first_name, sender_last_name;
     QStringList from_id;
+    QStringList id;
+    int current_row;
+    QString current_name;
+    QString current_id;
 
 private:
     Ui::vDesc *ui;
@@ -57,6 +62,8 @@ private slots:
     void onGetMessagesClicked();
     void onReplyForMessagesFinished(QNetworkReply*);
     void onReplyForSenderNameFinished(QNetworkReply*);
+    void onDialogDoubleClicked();
+    void onCurrentDialogLoaded(QNetworkReply*);
 };
 
 #endif // VDESC_H

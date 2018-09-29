@@ -14,7 +14,10 @@ vDesc::vDesc(QWidget *parent) :
     manager2 = new QNetworkAccessManager(this);
     manager3 = new QNetworkAccessManager(this);
     manager4 = new QNetworkAccessManager(this);
+    manager5 = new QNetworkAccessManager(this);
+
     connect(ui->tokenEdit,&QLineEdit::returnPressed,this,&vDesc::onReturnPressed);
+    connect(ui->messageInput,&QLineEdit::returnPressed,this,&vDesc::sendMessage);
     connect(ui->changeTokenPb,&QPushButton::clicked,this,&vDesc::onChangeTokenClicked);
     connect(ui->getFriendsPb,&QPushButton::clicked,this,&vDesc::onGetFriendsClicked);
     connect(manager2, SIGNAL(finished(QNetworkReply*)),this, SLOT(onReplyFinished(QNetworkReply*)));
@@ -24,6 +27,8 @@ vDesc::vDesc(QWidget *parent) :
     connect(ui->getMessagesPb,&QPushButton::clicked,this,&vDesc::onGetMessagesClicked);
     connect(manager3, SIGNAL(finished(QNetworkReply*)),this, SLOT(onReplyForMessagesFinished(QNetworkReply*)));
     connect(manager4, SIGNAL(finished(QNetworkReply*)),this, SLOT(onReplyForSenderNameFinished(QNetworkReply*)));
+    connect(ui->messages, &QListWidget::doubleClicked, this, &vDesc::onDialogDoubleClicked);
+    connect(manager5, SIGNAL(finished(QNetworkReply*)),this, SLOT(onCurrentDialogLoaded(QNetworkReply*)));
 }
 
 vDesc::~vDesc()
@@ -154,16 +159,20 @@ void vDesc::chooseId(){
 
 void vDesc::sendMessage(){
     QString message = ui->messageInput->text();
-    manager->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.send?user_id=" + currentId + "&message="+ message +"&access_token="+token+"&v=5.85")));
-    ui->history->append("[" + QTime::currentTime().toString() + "] Сообщение: " + message +" отправлено: " + name );
+    manager->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.send?user_id=" + current_id + "&message="+ message +"&access_token="+token+"&v=5.85")));
+    //ui->history->append("[" + QTime::currentTime().toString() + "] Сообщение: " + message +" отправлено: " + name );
+    ui->messages->addItem(ui->nameEdit->text() + " : " + message);
 }
 
 void vDesc::onGetMessagesClicked(){
+    ui->getMessagesPb->setText("Get messages");
+    connect(ui->messages, &QListWidget::doubleClicked, this, &vDesc::onDialogDoubleClicked);
     ui->messages->clear();
     text.clear();
     sender_first_name.clear();
     sender_last_name.clear();
     from_id.clear();
+    id.clear();
 
     int count = ui->spinBox->value();
     manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=" + QString::number(count) + "&access_token="+token+"&v=5.85")));
@@ -175,7 +184,6 @@ void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
     QJsonObject jsonObject = jsonResponse.object();
     jsonObject = jsonObject["response"].toObject();
     QJsonArray jsonArray = jsonObject["items"].toArray();
-    QStringList id;
     foreach (const QJsonValue & value, jsonArray) {
         QJsonObject obj = value.toObject();
         QJsonObject obj2 = value.toObject();
@@ -196,7 +204,7 @@ void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
         }
 
     QString url = "https://api.vk.com/method/users.get?user_ids="+ id.join(",") + "&access_token="+token+"&v=5.85";
-    manager4->get(QNetworkRequest(QUrl(url))); //пизда потому что есть повторяющиеся id ( нужно делать два запроса???? )
+    manager4->get(QNetworkRequest(QUrl(url)));
 }
 
 void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
@@ -214,12 +222,45 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
             }
         }
     }
-    qDebug() << "text :" << text.length();
-    qDebug() << "f_n :" << sender_first_name.length();
-    qDebug() << "l_n :" << sender_last_name.length();
 
    for(int i = 0; i<text.length(); i++){
       ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
+    }
+}
+
+void vDesc::onDialogDoubleClicked(){
+    disconnect(ui->messages, &QListWidget::doubleClicked, this, &vDesc::onDialogDoubleClicked);
+    current_row = ui->messages->currentIndex().row();
+    current_name = sender_first_name.at(current_row)+" "+sender_last_name.at(current_row);
+    current_id = id.at(current_row);
+    ui->messages->clear();
+    QString url = "https://api.vk.com/method/messages.getHistory?count=" + QString::number(ui->spinBox->value()) + "&user_id="+ current_id + "&access_token="+token+"&v=5.85";
+    manager5->get(QNetworkRequest(QUrl(url)));
+    ui->getMessagesPb->setText("Back");
+}
+
+void vDesc::onCurrentDialogLoaded(QNetworkReply *reply){
+    QString strReply = (QString)reply->readAll();
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+    jsonObject = jsonObject["response"].toObject();
+    QJsonArray jsonArray = jsonObject["items"].toArray();
+    QStringList message_items;
+    foreach (const QJsonValue & value, jsonArray) {
+        QJsonObject obj = value.toObject();
+        QString from_who;
+
+        if(obj["from_id"].toInt() == current_id.toInt()){
+            from_who = current_name;
+        }else{
+            from_who = ui->nameEdit->text();
+        }
+        QString text_m = obj["text"].toString();
+        QString item = from_who + " : " + text_m ;
+        message_items.append(item);
+    }
+    for(int i = message_items.length()-1; i >= 0; --i){
+        ui->messages->addItem(message_items.at(i));
     }
 }
 
