@@ -1,7 +1,7 @@
 # vDesc
 cute vk desktop client
 
-Now you can easily browse vk.com from your desktop c:
+Now you can easily browse [vk.com](https://vk.com/) from your desktop c:
 
 ## How do i do this?
 1) Use this [link](https://oauth.vk.com/authorize?client_id=5580473&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,wall,messages,offline&response_type=token&v=5.85)
@@ -24,8 +24,8 @@ This app is still in development. Some features may be unavailiable
 - [Qt](http://www.qt.io/) - user interface and internal logic
 - [vk API](https://vk.com/dev)
 
-- Qt documentation - [click this link](http://doc.qt.io/)
-- VK documentation - [click this link](https://vk.com/dev/first_guide)
+- [Qt documentation](http://doc.qt.io/)
+- [VK documentation](https://vk.com/dev/first_guide)
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
