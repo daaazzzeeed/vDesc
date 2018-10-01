@@ -44,6 +44,7 @@ public:
     int current_row;
     QString current_name;
     QString current_id;
+    QStringList attachment_type;
 
 private:
     Ui::vDesc *ui;

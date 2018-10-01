@@ -90,7 +90,6 @@ void vDesc::onReturnPressed(){
     token = ui->tokenEdit->text();
     ui->tokenEdit->setText("************");
     manager2->get(QNetworkRequest(QUrl("https://api.vk.com/method/account.getProfileInfo?access_token="+token+"&v=5.85")));
-  //  manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=10&access_token="+token+"&v=5.85"))); //в конструктор
 }
 
 void vDesc::onChangeTokenClicked(){
@@ -159,8 +158,8 @@ void vDesc::chooseId(){
 
 void vDesc::sendMessage(){
     QString message = ui->messageInput->text();
+    ui->messageInput->clear();
     manager->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.send?user_id=" + current_id + "&message="+ message +"&access_token="+token+"&v=5.85")));
-    //ui->history->append("[" + QTime::currentTime().toString() + "] Сообщение: " + message +" отправлено: " + name );
     ui->messages->addItem(ui->nameEdit->text() + " : " + message);
 }
 
@@ -240,6 +239,7 @@ void vDesc::onDialogDoubleClicked(){
 }
 
 void vDesc::onCurrentDialogLoaded(QNetworkReply *reply){
+    attachment_type.clear();
     QString strReply = (QString)reply->readAll();
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
@@ -258,9 +258,30 @@ void vDesc::onCurrentDialogLoaded(QNetworkReply *reply){
         QString text_m = obj["text"].toString();
         QString item = from_who + " : " + text_m ;
         message_items.append(item);
+        QString type;
+        QJsonArray attachments = value.toArray();
+        attachments = obj["attachments"].toArray();
+        if(attachments.empty()){
+            type = "";
+            attachment_type.append(type);
+        }else{
+        foreach (const QJsonValue & value, attachments) {
+            QJsonObject obj = value.toObject();
+            type = obj["type"].toString();
+            attachment_type.append(type);
+        }
+      }
     }
+
+    qDebug() << attachment_type.length();
+
     for(int i = message_items.length()-1; i >= 0; --i){
-        ui->messages->addItem(message_items.at(i));
+        if(attachment_type.at(i) == ""){
+            ui->messages->addItem(message_items.at(i) + attachment_type.at(i));
+        }else{
+            ui->messages->addItem(message_items.at(i) + " [" + attachment_type.at(i) + "]");
+        }
+
     }
 }
 
