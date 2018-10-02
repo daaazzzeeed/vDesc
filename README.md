@@ -26,7 +26,7 @@ This app is still in development. Some features may be unavailiable
 
 # Built With
 - [Qt](http://www.qt.io/) - user interface and internal logic
-- [vk API](https://vk.com/dev)
+- [vk API](https://vk.com/dev) - vk api queries
 
 - [Qt documentation](http://doc.qt.io/)
 - [VK documentation](https://vk.com/dev/first_guide)
