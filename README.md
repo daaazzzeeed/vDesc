@@ -1,4 +1,4 @@
-# vDesc
+# vDesc ![vDesc logo](vDesc.png)
 cute vk desktop client written in pure C++/Qt
 
 ***At this stage vDesc is able to show your vk friends/friends online, display your dialogs/chats, display history on particular dialog/chat, send and receive messages, including emoji(if message contains attachment vDesc will display its type if [it's not text])***
