@@ -3,13 +3,17 @@
 #include "qdebug.h"
 #include<QStringList>
 #include <QTime>
+#include <QIcon>
 
 
 vDesc::vDesc(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::vDesc)
 {
+    setWindowIcon(QIcon(":/vDesc.png"));
     ui->setupUi(this);
+    //ui->messages->setWordWrap(true);
+    ui->messages->setTextElideMode(Qt::ElideNone);
     manager = new QNetworkAccessManager(this);
     manager2 = new QNetworkAccessManager(this);
     manager3 = new QNetworkAccessManager(this);
@@ -223,9 +227,30 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
     }
 
    for(int i = 0; i<text.length(); i++){
-      ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
-    }
-}
+   /*    QString data_all = text.at(i);
+           QString data_left = "";
+           QString data_right;
+           int offset = 60;
+           if(data_all.length() > offset){
+               data_left = data_all.left(offset);
+               data_right = data_all.mid(offset);
+               data_all = data_left;
+               while(data_right.length() > offset){
+                   QString data_temp = data_right.left(offset);
+                   data_right = data_right.mid(offset);
+                   data_all += "\n";
+                   data_all += data_temp;
+
+      ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + data_all);
+      data_all.clear();
+      data_left.clear();
+      data_right.clear();
+        }
+      }else{ */
+               ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
+           }
+   }
+//}
 
 void vDesc::onDialogDoubleClicked(){
     disconnect(ui->messages, &QListWidget::doubleClicked, this, &vDesc::onDialogDoubleClicked);
@@ -273,16 +298,29 @@ void vDesc::onCurrentDialogLoaded(QNetworkReply *reply){
       }
     }
 
-    qDebug() << attachment_type.length();
-
     for(int i = message_items.length()-1; i >= 0; --i){
+        QString data_all = message_items.at(i);
         if(attachment_type.at(i) == ""){
-            ui->messages->addItem(message_items.at(i) + attachment_type.at(i));
+          /*  QString data_left = "";
+            QString data_right;
+            int offset = 60;
+            if(data_all.length() > offset){
+                data_left = data_all.left(offset);
+                data_right = data_all.mid(offset);
+                data_all = data_left;
+                while(data_right.length() > offset){
+                    QString data_temp = data_right.left(offset);
+                    data_right = data_right.mid(offset);
+                    data_all += "\n";
+                    data_all += data_temp;
+                }
+            }*/
+            ui->messages->addItem(data_all + attachment_type.at(i));
         }else{
-            ui->messages->addItem(message_items.at(i) + " [" + attachment_type.at(i) + "]");
+            ui->messages->addItem(data_all + " [" + attachment_type.at(i) + "]");
         }
-
     }
 }
+
 
 

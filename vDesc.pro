@@ -18,3 +18,7 @@ SOURCES += src\main.cpp\
 HEADERS  += src\vdesc.h
 
 FORMS    += ui\vdesc.ui
+#RC_ICONS = vDesc.ico
+
+RESOURCES += \
+    resources.qrc
