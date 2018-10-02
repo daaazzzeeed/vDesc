@@ -32,9 +32,8 @@ This app is still in development. Some features may be unavailiable
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ## Installing
-Download and run Qt Creator, download this project, then open '.pro' file, setup your project. 
-In your project change path to '.db' file to match the directory you store the database in.
-Now you're ready to go!
+- Download and run Qt Creator, download this project, then open '.pro' file, setup your project. 
+- Or just download project, go to release directory and run vDesc.exe
 
 # Authors
 - Dmitry Petukhov - Initial work/founder
