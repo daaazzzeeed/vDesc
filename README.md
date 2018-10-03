@@ -19,8 +19,11 @@ Use this token to login by pasting it into this application (first QLineEdit at 
 
 Screenshots provide will provide you with the general look of this application
 ![alt tag](vdesc1.png)
+(pic. 1 - friends)
 ![alt tag](vdesc2.png)
+(pic. 2 - dialogs)
 ![alt tag](vdesc3.png)
+(pic. 3 - dialog history)
 
 # Please notice
 This app is still in development. Some features may be unavailiable
