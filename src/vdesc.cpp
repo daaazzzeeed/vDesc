@@ -176,6 +176,7 @@ void vDesc::onGetMessagesClicked(){
     sender_last_name.clear();
     from_id.clear();
     id.clear();
+    chat_name.clear();
 
     int count = ui->spinBox->value();
     manager3->get(QNetworkRequest(QUrl("https://api.vk.com/method/messages.getConversations?count=" + QString::number(count) + "&access_token="+token+"&v=5.85")));
@@ -183,6 +184,7 @@ void vDesc::onGetMessagesClicked(){
 
 void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
     QString strReply = (QString)reply->readAll();
+    qDebug() << strReply;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
     jsonObject = jsonObject["response"].toObject();
@@ -191,8 +193,20 @@ void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
         QJsonObject obj = value.toObject();
         QJsonObject obj2 = value.toObject();
         obj = obj["conversation"].toObject();
+        QJsonObject obj3 = obj;
         obj = obj["peer"].toObject();
-        id.append(QString::number(obj["id"].toInt()));
+
+
+        if(obj["type"].toString() == "user"){
+            id.append(QString::number(obj["id"].toInt()));
+        }
+        else if(obj["type"].toString() == "chat"){
+            obj3 = obj3["chat_settings"].toObject();
+            chat_name.append(obj3["title"].toString());
+             id.append(QString::number(obj["id"].toInt()));
+        }
+        else{id.append(QString::number(obj["id"].toInt()));}
+
         obj2 = obj2["last_message"].toObject();
         from_id.append(QString::number(obj2["from_id"].toInt()));
         text.append(obj2["text"].toString());
@@ -208,16 +222,24 @@ void vDesc::onReplyForMessagesFinished(QNetworkReply *reply){
 
     QString url = "https://api.vk.com/method/users.get?user_ids="+ id.join(",") + "&access_token="+token+"&v=5.85";
     manager4->get(QNetworkRequest(QUrl(url)));
+    qDebug() << chat_name;
 }
 
 void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
     QString strReply = (QString)reply->readAll();
+    qDebug() << strReply;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
     QJsonArray jsonArray = jsonObject["response"].toArray();
     foreach (const QJsonValue & value, jsonArray) {
         QJsonObject obj = value.toObject();
-        sender_first_name.append(obj["first_name"].toString());
+        QString fn = obj["first_name"].toString();
+        if(fn != "DELETED"){
+        sender_first_name.append(fn);
+        }else{
+            sender_first_name.append(chat_name.at(0));
+            chat_name.removeAt(0);
+        }
         sender_last_name.append(obj["last_name"].toString());
         for(int i =0; i<from_id.length(); i++){
             if(from_id.at(i) == QString::number(obj["id"].toInt())){
@@ -249,6 +271,7 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
       }else{ */
                ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
            }
+
    }
 //}
 

@@ -45,6 +45,7 @@ public:
     QString current_name;
     QString current_id;
     QStringList attachment_type;
+    QStringList chat_name;
 
 private:
     Ui::vDesc *ui;
