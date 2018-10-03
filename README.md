@@ -18,8 +18,9 @@ The token is your access key. While completing certain conditions, a person who 
 Use this token to login by pasting it into this application (first QLineEdit at the left top corner of the window)
 
 Screenshots provide will provide you with the general look of this application
-![alt tag](vDesc_new_4.png)
-![alt tag](vDesc_new_5.png)
+![alt tag](vdesc1.png)
+![alt tag](vdesc2.png)
+![alt tag](vdesc3.png)
 
 # Please notice
 This app is still in development. Some features may be unavailiable
