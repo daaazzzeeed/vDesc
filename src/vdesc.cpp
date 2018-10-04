@@ -249,31 +249,10 @@ void vDesc::onReplyForSenderNameFinished(QNetworkReply* reply){
     }
 
    for(int i = 0; i<text.length(); i++){
-   /*    QString data_all = text.at(i);
-           QString data_left = "";
-           QString data_right;
-           int offset = 60;
-           if(data_all.length() > offset){
-               data_left = data_all.left(offset);
-               data_right = data_all.mid(offset);
-               data_all = data_left;
-               while(data_right.length() > offset){
-                   QString data_temp = data_right.left(offset);
-                   data_right = data_right.mid(offset);
-                   data_all += "\n";
-                   data_all += data_temp;
-
-      ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + data_all);
-      data_all.clear();
-      data_left.clear();
-      data_right.clear();
-        }
-      }else{ */
                ui->messages->addItem("[" + sender_first_name.at(i)+" "+sender_last_name.at(i)  + "]" + " от " + from_id.at(i) + " : " + text.at(i));
            }
 
    }
-//}
 
 void vDesc::onDialogDoubleClicked(){
     disconnect(ui->messages, &QListWidget::doubleClicked, this, &vDesc::onDialogDoubleClicked);
@@ -324,26 +303,9 @@ void vDesc::onCurrentDialogLoaded(QNetworkReply *reply){
     for(int i = message_items.length()-1; i >= 0; --i){
         QString data_all = message_items.at(i);
         if(attachment_type.at(i) == ""){
-          /*  QString data_left = "";
-            QString data_right;
-            int offset = 60;
-            if(data_all.length() > offset){
-                data_left = data_all.left(offset);
-                data_right = data_all.mid(offset);
-                data_all = data_left;
-                while(data_right.length() > offset){
-                    QString data_temp = data_right.left(offset);
-                    data_right = data_right.mid(offset);
-                    data_all += "\n";
-                    data_all += data_temp;
-                }
-            }*/
             ui->messages->addItem(data_all + attachment_type.at(i));
         }else{
             ui->messages->addItem(data_all + " [" + attachment_type.at(i) + "]");
         }
     }
 }
-
-
-
